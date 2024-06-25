@@ -1,4 +1,5 @@
 "use server";
+import { createAuthSession } from "@/lib/auth";
 import { hashUserPassword } from "@/lib/hash";
 import { createUser } from "@/lib/users";
 import {  redirect } from "next/navigation";
@@ -6,6 +7,7 @@ import {  redirect } from "next/navigation";
 export async function signup({ email, password }) {
   console.log(email, password);
 
+  //유효성 체크
   let errors = {};
   if (!email.includes("@")) {
     errors.email = "이메일 정보가 유효하지 않습니다.";
@@ -20,13 +22,21 @@ export async function signup({ email, password }) {
     return { errors: errors };
   }
 
+  //비밀번호 암호화 
   const hashedPassword = hashUserPassword(password);
 
   try {
-    createUser(email, hashedPassword);
-  } catch (error) {
-    console.log(error);
+    const id=createUser(email, hashedPassword);
 
+    //루시아를 통한 인증
+    console.log(" 루시아를 통한 인증  :", id);
+    await createAuthSession(id);
+    
+    
+    redirect('/training');
+  
+  } catch (error) {
+   // console.log(error);
     if(error.code ==='SQLITE_CONSTRAINT_UNIQUE'){
       return {
         errors: {
@@ -37,6 +47,4 @@ export async function signup({ email, password }) {
     throw error;
   }
 
-  redirect('/training');
-  
 }
