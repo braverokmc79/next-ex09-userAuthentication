@@ -1,12 +1,15 @@
 "use server";
 import { createAuthSession } from "@/lib/auth";
-import { hashUserPassword } from "@/lib/hash";
-import { createUser } from "@/lib/users";
+import { hashUserPassword, verifyPassword } from "@/lib/hash";
+import { createUser, getUser, getUserByEmail } from "@/lib/users";
 import {  redirect } from "next/navigation";
 
-export async function signup({ email, password }) {
-  console.log("유효성 체크  :" ,email, password);
 
+/**
+ * 회원가입
+*/
+export async function signup({ email, password }) {
+  
   //유효성 체크
   let errors = {};
   if (!email.includes("@")) {
@@ -32,7 +35,6 @@ export async function signup({ email, password }) {
     console.log(" 루시아를 통한 인증  :", id);
     await createAuthSession(id);
     
-    
     redirect('/training');
   
   } catch (error) {
@@ -48,3 +50,40 @@ export async function signup({ email, password }) {
   }
 
 }
+
+/**
+ * 로그인 처리
+*/
+export async function login({ email, password }){
+  console.log("로그인 처리");
+    
+  //유효성 체크
+  let errors = {};
+  if (email.trim().length<0 || password.trim().length) {
+    errors.email = "입력 정보가 유효하지 않습니다.";
+  }
+
+  const existingUser=getUserByEmail(email);
+  if(!existingUser) {
+    return {
+      errors: {
+        email:"등록된 회원이 아닙니다."
+      },
+    };
+  }
+
+
+ const isValidPassword=verifyPassword(existingUser.password, password);
+ if(!isValidPassword) {
+    return {
+      errors: {
+        password:"비밀번호가 일치 하지 않습니다."
+      },
+    };
+ }
+
+  await createAuthSession(existingUser.id);
+  redirect('/training');
+
+}
+

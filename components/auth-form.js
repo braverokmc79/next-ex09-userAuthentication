@@ -1,5 +1,5 @@
 "use client";
-import { signup } from "@/actions/auth-actions";
+import { login, signup } from "@/actions/auth-actions";
 import Link from "next/link";
 import { useState } from "react";
 //import  {useFormState} from "react-dom";
@@ -33,12 +33,16 @@ function useFormState(action) {
  
   return { formState, formAction };
 }
+
+
  
-export default function AuthForm() {
+export default function AuthForm({mode}) {
   // useFormState 훅을 사용하여 폼 상태와 폼 제출 동작을 가져옵니다.
-  const { formState, formAction } = useFormState(signup);
+  const { formState, formAction } = useFormState(mode==="login" ? login : signup);
   //const { formState, formAction } = useFormState(signup, null);
  
+
+
   return (
     <form id="auth-form" onSubmit={formAction}>
       <div>
@@ -65,10 +69,14 @@ export default function AuthForm() {
       </div>
  
       <p>
-        <button type="submit">유저 생성</button>
+        <button type="submit">
+              {mode ==='login' ? '로그인' :'회원가입' }
+          </button>
       </p>
       <p>
-        <Link href="/">Login with existing account.</Link>
+        {mode ==='login' && <Link href="/?mode=signup" >회원가입</Link>}
+
+        {mode ==='signup' &&<Link href="/?mode=login">로그인 하기..</Link> }
       </p>
     </form>
   );
