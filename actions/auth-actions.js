@@ -87,3 +87,12 @@ export async function login({ email, password }){
 
 }
 
+
+
+export async function auth(mode, formData){
+  if(mode === 'login'){
+    return await login(formData);
+  }
+  
+  return await signup(formData);
+}

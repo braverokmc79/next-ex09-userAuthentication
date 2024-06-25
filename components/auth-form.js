@@ -1,5 +1,5 @@
 "use client";
-import { login, signup } from "@/actions/auth-actions";
+import { auth, login, signup } from "@/actions/auth-actions";
 import Link from "next/link";
 import { useState } from "react";
 //import  {useFormState} from "react-dom";
@@ -7,7 +7,7 @@ import { useState } from "react";
 
 // 커스텀 훅 정의
 // 이 훅은 폼 상태와 폼 제출 동작을 관리합니다.
-function useFormState(action) {
+function useFormState(mode, action) {
   const [formState, setFormState] = useState({ errors: {} });
  
   // 폼 제출 동작 정의
@@ -20,7 +20,7 @@ function useFormState(action) {
  
     try {
       // 서버 액션 호출 및 결과 처리
-      const response = await action({ email, password });
+      const response = await action(mode, { email, password });
       if (response.errors) {
         setFormState({ errors: response.errors });
       } else {
@@ -38,10 +38,9 @@ function useFormState(action) {
  
 export default function AuthForm({mode}) {
   // useFormState 훅을 사용하여 폼 상태와 폼 제출 동작을 가져옵니다.
-  const { formState, formAction } = useFormState(mode==="login" ? login : signup);
-  //const { formState, formAction } = useFormState(signup, null);
- 
-
+  const { formState, formAction } = useFormState(mode, auth);
+  //const { formState, formAction } = useFormState(auth.bind(null,mode), {});
+  
 
   return (
     <form id="auth-form" onSubmit={formAction}>
