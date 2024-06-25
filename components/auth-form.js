@@ -2,7 +2,9 @@
 import { signup } from "@/actions/auth-actions";
 import Link from "next/link";
 import { useState } from "react";
- 
+//import  {useFormState} from "react-dom";
+
+
 // 커스텀 훅 정의
 // 이 훅은 폼 상태와 폼 제출 동작을 관리합니다.
 function useFormState(action) {
@@ -35,6 +37,7 @@ function useFormState(action) {
 export default function AuthForm() {
   // useFormState 훅을 사용하여 폼 상태와 폼 제출 동작을 가져옵니다.
   const { formState, formAction } = useFormState(signup);
+  //const { formState, formAction } = useFormState(signup, null);
  
   return (
     <form id="auth-form" onSubmit={formAction}>
@@ -52,7 +55,7 @@ export default function AuthForm() {
  
       <div>
         {/* 폼 상태에 오류가 있는 경우 오류 메시지를 표시합니다. */}
-        {formState.errors && (
+        {formState&& formState.errors && (
           <ul id="form-errors">
             {Object.keys(formState.errors).map((error) => (
               <li key={error}>{formState.errors[error]}</li>

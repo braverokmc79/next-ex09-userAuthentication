@@ -5,7 +5,7 @@ import { createUser } from "@/lib/users";
 import {  redirect } from "next/navigation";
 
 export async function signup({ email, password }) {
-  console.log(email, password);
+  console.log("유효성 체크  :" ,email, password);
 
   //유효성 체크
   let errors = {};
